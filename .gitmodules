@@ -1,0 +1,3 @@
+[submodule "keccak"]
+	path = keccak
+	url = https://github.com/ctz/keccak
