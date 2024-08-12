@@ -1,0 +1,28 @@
+
+name: Build the project
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Clone the repo
+        uses: actions/checkout@v4
+        with:
+          submodule: true # checkout submodule 'keccak' - python implementation
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential python-is-python3
+
+      - name: Build C files
+        run: |
+          make all
+
+      - name: clean up
+        run: |
+          make clean
+          
