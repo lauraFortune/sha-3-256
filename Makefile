@@ -38,6 +38,6 @@ tests:
 # clean up compiled c files
 clean:
 	@echo "Cleaning up..."
-	del /f /q *.o *.so main.exe
+	rm -f *.o *.so main
 	@echo "Cleaned up!"
 
