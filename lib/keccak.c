@@ -8,6 +8,14 @@
 // main file where keccak algorithm will be implemented
 #include "keccak.h"
 
+
+// test function
+int add(int x, int y) {
+  return x + y;
+}
+
+
+
 /*
  * Keccak-f[b] - Permutation Functions
  * - b=1600, w=64, n=24, z=output, A=state array, d=256/8 = 32 bytes (output length) 

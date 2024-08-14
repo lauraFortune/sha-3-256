@@ -10,11 +10,11 @@ void print_32byte_digest(unsigned char *digest, size_t length) {
 
   for (int i = 0; i < length; i++) {
     printf("%02x", digest[i]); // prints each byte as 2 digit hex
-
+  
     // adds space every 8 bytes for readability
-    if ((i + 1) % 8 == 0) printf(" ");
-    
-  }
+    if ((i + 1) % 8 == 0) printf(" ");   
+
+ }
   printf("\n"); 
 }
 

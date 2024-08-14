@@ -37,7 +37,11 @@ tests:
 
 # clean up compiled c files
 clean:
-	@echo "Cleaning up..."
-	rm -f *.o *.so main
-	@echo "Cleaned up!"
+		@echo "Cleaning up..."
+ifeq ($(OS),Windows_NT)
+				del /Q *.o *.so main.exe 2>nul
+else
+				rm -f *.o *.so main
+endif
+		@echo "Cleaned up!"
 
