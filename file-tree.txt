@@ -1,6 +1,7 @@
 sha-3-256
+├── .clang-format
 ├── .github
-│   └── worklows
+│   └── workflows
 │       └── build.yml
 ├── .gitignore
 ├── .gitmodules
@@ -16,7 +17,9 @@ sha-3-256
 │   ├── keccak.py
 │   ├── KeccakKAT.zip
 │   ├── README.md
-│   └── tests.py
+│   ├── tests.py
+│   └── __pycache__
+│       └── keccak.cpython-311.pyc
 ├── lib
 │   ├── keccak.c
 │   ├── keccak.h

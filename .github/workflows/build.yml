@@ -11,7 +11,7 @@ jobs:
       - name: Clone the repo
         uses: actions/checkout@v4
         with:
-          submodule: true # checkout submodule 'keccak' - python implementation
+          submodules: true # checkout submodule 'keccak' - python implementation
 
       - name: Install dependencies
         run: |
