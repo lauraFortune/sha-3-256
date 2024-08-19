@@ -17,6 +17,16 @@ so_file = base_path / '../keccak.so'        # Keccak shared object - direct file
 keccak_c = CDLL(str(so_file))               # Loads shared object file using ctypes
 
 
+def random_state_generator():
+  state_matrix = []
+  for x in range(5):
+    row = []
+    for y in range(5):
+      random_int = secrets.randbits(64) # generates a random 64-bit int - for each lane
+      row.append(random_int)  
+    state_matrix.append(row) 
+  return state_matrix 
+
 
 class TestKeccakMethods(unittest.TestCase):
 

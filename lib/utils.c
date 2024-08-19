@@ -26,3 +26,8 @@ const int ROTATIONS[5][5] = {
 
 
 // helper functions
+
+// Function to rotate a 64-bit number 'val' left 'n' positions
+uint64_t ROTL64(uint64_t val, uint64_t n) {
+  return (val << n) | (val >> (64 - n));
+}

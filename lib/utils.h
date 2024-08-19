@@ -15,6 +15,7 @@
 extern const uint64_t RC[24];
 extern const int ROTATIONS[5][5];
 
-
+// declare helper functions
+uint64_t ROTL64(uint64_t val, uint64_t n);
 
 #endif
