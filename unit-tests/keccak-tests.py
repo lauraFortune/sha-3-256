@@ -6,16 +6,26 @@ import sys                # modifying import path
 import secrets            # for generating cryptographically secure random numbers
 
 
+base_path = Path(__file__).resolve().parent # base directory path
+so_file = base_path / '../keccak.so'        # Keccak shared object - direct file path
+keccak_c = CDLL(str(so_file))               # Loads shared object file using ctypes
+
+
 submodule_dir_path = Path(__file__).resolve().parent.parent / 'keccak'  # Keccak submodule directory path - python implementation
 submodule_dir_path = submodule_dir_path.resolve().absolute()            # Converts submodule dir path to absolute path
 sys.path.append(str(submodule_dir_path))                                # Adds submodule dir to pythons import search paths
 import keccak as keccak_py                                              # Imports keccak.py from submodule dir
 
+#### Legacy code management ####
+# Python 3 no longer supports native 'reduce'
+import functools 
+keccak_py.reduce = functools.reduce 
 
-base_path = Path(__file__).resolve().parent # base directory path
-so_file = base_path / '../keccak.so'        # Keccak shared object - direct file path
-keccak_c = CDLL(str(so_file))               # Loads shared object file using ctypes
-
+# six for compatibility
+sys.path.insert(0, str(base_path / '../lib/dependencies/'))
+import six                # python 2 to 3: handling legacy code
+# xrange not comptabible with Python 3
+keccak_py.xrange = six.moves.range
 
 
 
