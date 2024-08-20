@@ -7,14 +7,19 @@
 
 // main file where keccak algorithm will be implemented
 #include "keccak.h"
-
+#include "round_functions.h"
 
 // test function
 int add(int x, int y) {
   return x + y;
 }
 
-
+// SHA-3-256 Setup
+#define RATE 1088
+#define CAPACITY 512
+#define OUTPUT_LENGTH (256 / 8) // 256-bits / 8-bits = 32 bytes
+#define BLOCKSIZE 136           // rate / 8-bits = 136-bytes
+#define KECCAK_ROUNDS 24        // 24 rounds for keccak-f[1600]
 
 /*
  * Keccak-f[b] - Permutation Functions
@@ -30,7 +35,14 @@ int add(int x, int y) {
  *      return A
  *   }
  */
-
+void keccak_f(uint64_t state[5][5]) {
+  for (int round = 0; round < KECCAK_ROUNDS; round++) {
+    theta(state);
+    rho_and_pi(state);
+    chi(state);
+    iota(state, round);
+  }
+}
 
 
 /*
