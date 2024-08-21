@@ -4,8 +4,9 @@
  * Keccak, SHA-3 256 Bit Variant Implementation
  */
 
-
 // main file where keccak algorithm will be implemented
+#include <stdlib.h>
+#include <string.h>
 #include "keccak.h"
 #include "round_functions.h"
 
@@ -14,12 +15,6 @@ int add(int x, int y) {
   return x + y;
 }
 
-// SHA-3-256 Setup
-#define RATE 1088
-#define CAPACITY 512
-#define OUTPUT_LENGTH (256 / 8) // 256-bits / 8-bits = 32 bytes
-#define BLOCKSIZE 136           // rate / 8-bits = 136-bytes
-#define KECCAK_ROUNDS 24        // 24 rounds for keccak-f[1600]
 
 /*
  * Keccak-f[b] - Permutation Functions
@@ -50,6 +45,17 @@ void keccak_f(uint64_t state[5][5]) {
  */
 
 // Padding
+void padding(unsigned char *buffer, size_t length, size_t padding_length) {
+
+  if (padding_length == 1) {
+    buffer[length] = 0x81;  // Pad with 0x81 if only one byte of padding is needed
+  } else {
+    buffer[length] = 0x01; // Padding starts at 0x01
+    memset(buffer + length + 1, 0x00, padding_length - 2); // zero filled padding
+    buffer[length + padding_length - 1] = 0x80; // End padding with 0x80
+  }
+}
+
 
 // Initialisation 
 
@@ -62,20 +68,45 @@ void keccak_f(uint64_t state[5][5]) {
  * Implementation of main hashing function declared in header file
  */
 unsigned char *keccak_hash(unsigned char *data, size_t length) {
+  
+  unsigned char *digest = (unsigned char *)malloc(32); // Allocate memory for output - hashed input
+  if (!digest) return NULL;
+
+  // #### Step 1. Padding
+  // Calculate padded message length
+  size_t padding_length = BLOCKSIZE - (length % BLOCKSIZE); 
+  size_t padded_message_length = length + padding_length; 
+
+  // Allocate memory for the padded message buffer
+  unsigned char *buffer = (unsigned char *)malloc(padded_message_length); 
+  if (!buffer) {
+    free(digest);
+    return NULL;
+  }
+
+  // Copies message input (data) into the start of the buffer
+  memcpy(buffer, data, length); // Buffer now contains [data][unitialised padding space]
+
+  // Apply the padding to buffer from the end of 'data'
+  padding(buffer, length, padding_length); // Buffer now contains [data][padding bytes]
+
+
 
   //TODO:
-  // Implement Padding
   // Implement Initialisation
   // Implement Absorbing phase
   // Implement Squeezing phase
 
-  // return hashed input
-  unsigned char *digest = (unsigned char *)malloc(32);
+
+  
 
   // place holder value 
   for (int i = 0; i < 32; i++) {
     digest[i] = 0x00; 
   }
+
   return digest;
 
 }
+
+

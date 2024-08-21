@@ -21,13 +21,20 @@ import keccak as keccak_py                                              # Import
 import functools 
 keccak_py.reduce = functools.reduce 
 
-# six for compatibility
-sys.path.insert(0, str(base_path / '../lib/dependencies/'))
-import six                # python 2 to 3: handling legacy code
-# xrange not comptabible with Python 3
-keccak_py.xrange = six.moves.range
+# Import six for compatibility
+sys.path.insert(0, str(base_path / 'lib/'))
+print(f"sys.path: {sys.path}")
+import six                
+keccak_py.xrange = six.moves.range # xrange not comptabible with Python 3
 
 
+
+def generate_random_buffers(num=3, max_length=1024):
+  buffers = []
+  for i in range(num):
+    length = secrets.randbelow(max_length) + 1
+    buffers.append(secrets.token_bytes(length))
+  return buffers
 
 # Create Array of random states for testing
 def generate_random_states(num=3):
@@ -36,8 +43,8 @@ def generate_random_states(num=3):
     # create array of 25 random 64-bit ints to populate state
     state = [secrets.randbits(64) for _ in range(25)]
     states.append(state)
-  return states 
-    
+  return states
+
 
 # Transforms array of 25 values to 5*5 C matrix
 def transform_to_c_state(values):
@@ -70,7 +77,8 @@ class TestKeccakMethods(unittest.TestCase):
     test_results = []
 
     for state in states:
-      # Insantiate states
+
+      # Instantiate states
       c_state = transform_to_c_state(state) 
       py_state = transform_to_py_state(state)
 
@@ -98,95 +106,46 @@ class TestKeccakMethods(unittest.TestCase):
       self.assertEqual(c_result, py_result, "C and Python results should be the same")
     
     print("================================ Keccak-f: Test Results ", test_results)
+
+
+  def test_padding(self):
+    buffers = generate_random_buffers(3)
+    test_results = []
+    
+    for buffer in buffers: 
+
+      # Setup params for Python & C implementation
+      blocksize = 136                                               # Blocks size for SHA-3-256
+      message_length = len(buffer)                                  # length of input message in bytes
+      padding_length = blocksize - (message_length % blocksize)     # required padding length
+      padded_message_length = message_length + padding_length       # total length of padded message
+
+      # Instantiate buffers
+      c_buffer = create_string_buffer(buffer, padded_message_length)
+      py_buffer = list(buffer)
+
+
+      # Call padding functions
+      keccak_c.padding(c_buffer, c_size_t(message_length), c_size_t(padding_length))  # updates c_buffer
+      py_padding = keccak_py.multirate_padding(message_length % blocksize, blocksize) # returns buffer padding 
+
+
+      # Padded message results
+      c_result = list(c_buffer.raw)       # C padded message
+      py_result = py_buffer + py_padding  # Py padded message
+
+      # Print Results
+      print(f"C Result: \n{c_result}")
+      print(f"Python Result: \n{py_result}")
+
+      # Tests
+      test_results.append((c_result == py_result))
+      self.assertEqual(c_result, py_result, "C and Python results should be the same")
+    
+    print("================================ Padding: Test Results ", test_results)
       
 
 
 
 if __name__== '__main__':
   unittest.main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  # # check functions accessible from keccak.c
-  # def test_ctypes(self): 
-  #   keccak_c.add.restype = c_int            # returns int
-  #   keccak_c.add.argtypes = [c_int, c_int]  # takes two ints as args
-
-  #   # Call keccak add function
-  #   result = keccak_c.add(6, 4)
-  #   self.assertEqual(result, 10, "keccak_c.add(6, 4) should return 10")
-
-  #   result = keccak_c.add(-2, 5)
-  #   self.assertEqual(result, 3, "keccak_c.add(-2, 5) should return 3")
-
-  #   result = keccak_c.add(0, 0)
-  #   self.assertEqual(result, 0, "keccak_c.add(0, 0) should return 0")
-
-
-  # # check functions accessible from keccak.py
-  # def test_python_submodule(self):
-
-  #   result = keccak_python.bits2bytes(15)
-  #   self.assertEqual(result, 2.75, "Keccak_python.bits2bytes(15) should return 2.75")
-
-  #   result = keccak_python.bits2bytes(8)
-  #   self.assertEqual(result, 1.875, "Keccak_python.bits2bytes(15) should return 1.875")
-
-  #   result = keccak_python.bits2bytes(0)
-  #   self.assertEqual(result, 0.875, "Keccak_python.bits2bytes(15) should return 0.875")
-
-
-
-# def random_state_generator():
-#   state_matrix = []
-#   for x in range(5):
-#     row = []
-#     for y in range(5):
-#       random_int = secrets.randbits(64) # generates a random 64-bit int - for each lane
-#       row.append(random_int)  
-#     state_matrix.append(row) 
-#   return state_matrix 
-
-
-
-# # Generates an array 'states' which stores 3 random state arrays for testing
-# def random_state_generator(num=3):
-#   states = []
-#   for i in range(num):
-#     state_matrix = []
-#     for x in range(5):
-#       row = []
-#       for y in range(5):
-#         random_int = secrets.randbits(64) # generates a random 64-bit int - for each lane
-#         row.append(random_int)  
-#       state_matrix.append(row) 
-#     states.append(state_matrix) 
-#   return states
-
-# # Convert python 2d list to C compatible format
-# def convert_to_c_state(state):
-#   # Define array type using ctypes lib 
-#   c_row = c_uint64 * 5    # single row of 5 64-bit unsigned ints using ctypes 'c_uint64'     
-#   # Instantiate the 5*5 matrix using c_row 
-#   c_state = (c_row * 5)() #all elements are set to zero
-
-#   # Populate c_state with python state values
-#   for x in range(5):
-#     for y in range(5):
-#       c_state[x][y] = state[x][y]
-  
-#   return c_state          # returned state is now compatible with the keccak C functions

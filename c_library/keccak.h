@@ -5,11 +5,15 @@
  */
 
 // Header file - declarations for keccak.c
-
 #ifndef KECCAK_H
 #define KECCAK_H
 
-#include <stdlib.h>
+// SHA-3-256 Setup
+#define RATE 1088
+#define CAPACITY 512
+#define OUTPUT_LENGTH (256 / 8) // 256-bits / 8-bits = 32 bytes
+#define BLOCKSIZE 136           // rate / 8-bits = 136-bytes
+#define KECCAK_ROUNDS 24        // 24 rounds for keccak-f[1600]
 
 
 /**

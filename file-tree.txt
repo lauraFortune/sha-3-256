@@ -5,6 +5,15 @@ sha-3-256
 │       └── build.yml
 ├── .gitignore
 ├── .gitmodules
+├── c_library
+│   ├── keccak.c
+│   ├── keccak.h
+│   ├── main.c
+│   ├── round_functions.c
+│   ├── round_functions.h
+│   ├── utils.c
+│   └── utils.h
+├── file-tree.txt
 ├── keccak
 │   ├── .git
 │   ├── .gitignore
@@ -20,15 +29,11 @@ sha-3-256
 │   ├── tests.py
 │   └── __pycache__
 │       └── keccak.cpython-311.pyc
-├── lib
-│   ├── keccak.c
-│   ├── keccak.h
-│   ├── main.c
-│   ├── round_functions.c
-│   ├── round_functions.h
-│   ├── utils.c
-│   └── utils.h
 ├── Makefile
 ├── README.md
 └── unit-tests
-    └── keccak-tests.py
+    ├── keccak-tests.py
+    └── lib
+        ├── six.py
+        └── __pycache__
+            └── six.cpython-311.pyc
