@@ -68,10 +68,22 @@ def transform_to_py_state(values):
       keccak_state.s[x][y] = values[x * 5 + y]
   return keccak_state
 
+def c_state_to_py_list(c_state):
+  result = []
+  for x in range(5):
+    row = []
+    for y in range(5):
+      row.append(c_state[x][y])
+    result.append(row)
+  return result
+
 
 
 class TestKeccakMethods(unittest.TestCase):
 
+  '''
+  Keccf_f Unit Test
+  '''
   def test_keccak_f(self):
     states = generate_random_states(3) # generates 3 random states for testing
     test_results = []
@@ -90,12 +102,7 @@ class TestKeccakMethods(unittest.TestCase):
       py_result = py_state.s
 
       # Convert c_state to python list for fair comparison
-      c_result = []
-      for x in range(5):
-        row = []
-        for y in range(5):
-          row.append(c_state[x][y])
-        c_result.append(row)
+      c_result = c_state_to_py_list(c_state)
 
       # Print Results
       print(f"C Result: \n{c_result}")
@@ -108,6 +115,9 @@ class TestKeccakMethods(unittest.TestCase):
     print("================================ Keccak-f: Test Results ", test_results)
 
 
+  '''
+  Padding Unit Test
+  '''
   def test_padding(self):
     buffers = generate_random_buffers(3)
     test_results = []
@@ -143,9 +153,35 @@ class TestKeccakMethods(unittest.TestCase):
       self.assertEqual(c_result, py_result, "C and Python results should be the same")
     
     print("================================ Padding: Test Results ", test_results)
+
       
+  '''
+  Initialise State Unit Test
+  '''
+  def test_initialise_state(self):
 
+    test_results = []
 
+    # Instantiate Python state
+    py_state = keccak_py.KeccakState.zero()
+    py_result = py_state
+
+    # Create C state
+    c_state = (c_uint64 * 5 * 5)()
+    # Initialise C state
+    keccak_c.initialise_state(c_state)
+    # Convert c_state to python list for fair comparison
+    c_result = c_state_to_py_list(c_state)
+
+    # Print Results
+    print(f"C Result: \n{c_result}")
+    print(f"Python Result: \n{py_result}")
+
+    # Tests
+    test_results.append((c_result == py_result))
+    self.assertEqual(c_result, py_result, "C and Python results should be the same")
+    
+    print("================================ Initialise State: Test Results ", test_results)
 
 if __name__== '__main__':
   unittest.main()

@@ -58,6 +58,13 @@ void padding(unsigned char *buffer, size_t length, size_t padding_length) {
 
 
 // Initialisation 
+void initialise_state(uint64_t state[5][5]) {
+  for(int x = 0; x < 5; x++) {
+    for(int y = 0; y < 5; y++) {
+      state[x][y] = 0;
+    }
+  }
+}
 
 // Absorbing Phase
 
@@ -90,10 +97,11 @@ unsigned char *keccak_hash(unsigned char *data, size_t length) {
   // Apply the padding to buffer from the end of 'data'
   padding(buffer, length, padding_length); // Buffer now contains [data][padding bytes]
 
-
+  // Step 2. Initialisation
+  uint64_t state[5][5];
+  initialise_state(state);
 
   //TODO:
-  // Implement Initialisation
   // Implement Absorbing phase
   // Implement Squeezing phase
 
