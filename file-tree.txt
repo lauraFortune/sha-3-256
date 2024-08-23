@@ -32,8 +32,4 @@ sha-3-256
 ├── Makefile
 ├── README.md
 └── unit-tests
-    ├── keccak-tests.py
-    └── lib
-        ├── six.py
-        └── __pycache__
-            └── six.cpython-311.pyc
+    └── keccak-tests.py

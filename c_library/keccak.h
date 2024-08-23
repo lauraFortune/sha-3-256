@@ -26,7 +26,7 @@
  * - Returns the Keccak 32-byte(256-bit) hash digest of the input data
  * 
  * @param data - pointer to an array of bytes (the input to be hashed)
- * @param length - length of the input data array
+ * @param length - length of the input (data)
  * @return unsigned char* - pointer to the array containing the keccak hash digest
  */
 

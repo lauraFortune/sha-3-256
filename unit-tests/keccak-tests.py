@@ -1,32 +1,28 @@
 
 import unittest           # python testing framework
+import sys                # modifying import path
 from ctypes import *      # python library for working with C
 from pathlib import Path  # object oriented filesystem paths
-import sys                # modifying import path
 import secrets            # for generating cryptographically secure random numbers
+import functools          # Python 2/3 compatibility - 'reduce'
+import six                # Python 2/3 compatibility - xrange -> range
 
+# C Path Setup               
+base_path = Path(__file__).resolve().parent  # base directory path
+so_file = base_path / '../keccak.so'         # Keccak shared object - direct file path
+keccak_c = CDLL(str(so_file))                # Loads shared object file using ctypes
 
-base_path = Path(__file__).resolve().parent # base directory path
-so_file = base_path / '../keccak.so'        # Keccak shared object - direct file path
-keccak_c = CDLL(str(so_file))               # Loads shared object file using ctypes
-
-
+# Python Path Setup
 submodule_dir_path = Path(__file__).resolve().parent.parent / 'keccak'  # Keccak submodule directory path - python implementation
 submodule_dir_path = submodule_dir_path.resolve().absolute()            # Converts submodule dir path to absolute path
 sys.path.append(str(submodule_dir_path))                                # Adds submodule dir to pythons import search paths
 import keccak as keccak_py                                              # Imports keccak.py from submodule dir
 
-#### Legacy code management ####
-# Python 3 no longer supports native 'reduce'
-import functools 
-keccak_py.reduce = functools.reduce 
-
-# Import six for compatibility
-sys.path.insert(0, str(base_path / 'lib/'))
-print(f"sys.path: {sys.path}")
-import six                
-keccak_py.xrange = six.moves.range # xrange not comptabible with Python 3
-
+# Python 2/3 compatibility patches
+keccak_py.xrange = six.moves.range                      # Xrange not comptabible with Python 3
+keccak_py.reduce = functools.reduce                     # Python 3 no longer supports native 'reduce'
+keccak_py.bits2bytes = lambda x: (int(x) + 7) // 8      # Patch for '/' - to ensure result is always int '//'
+keccak_py.KeccakState.str2bytes = lambda ss: list(ss)   # Patch for string/byte conversion 
 
 
 def generate_random_buffers(num=3, max_length=1024):
@@ -182,6 +178,48 @@ class TestKeccakMethods(unittest.TestCase):
     self.assertEqual(c_result, py_result, "C and Python results should be the same")
     
     print("================================ Initialise State: Test Results ", test_results)
+    
+    '''
+    Absorbing Unit Test
+    '''
+    def test_absorbing(self):
+      buffers = generate_random_buffers(3)
+      test_results = []
+
+      for buffer in buffers:
+        print(f"Buffer to absorb: \n{buffer}")
+        print(f"Buffer Length: \n{len(buffer)}")
+        # Initialise Python state
+        py_sponge = keccak_py.KeccakSponge(1088, 1600, keccak_py.multirate_padding, keccak_py.keccak_f)
+        
+        print(f"Py State before absorbing: \n{py_sponge.state.s}")
+        
+        py_sponge.absorb(buffer)
+        py_result = py_sponge.state.s
+
+        # Initialise C state
+        c_state = (c_uint64 * 5 * 5)()
+        keccak_c.initialise_state(c_state)
+
+        print(f"C State before absorbing: \n{c_state_to_py_list(c_state)}")
+
+        # Convert buffer to the correct C type
+        c_buffer = (c_uint8 * len(buffer))(*buffer)
+
+        # Call C absorbing function
+        keccak_c.absorbing(c_state, c_buffer, len(c_buffer))
+
+        c_result = c_state_to_py_list(c_state)
+
+        # Print Results
+        print(f"C Result: \n{c_result}")
+        print(f"Python Result: \n{py_result}")
+
+        # Tests
+        test_results.append((c_result == py_result))
+        self.assertEqual(c_result, py_result, "C and Python results should be the same")
+
+      print("================================ Absorbing: Test Results ", test_results)
 
 if __name__== '__main__':
   unittest.main()
