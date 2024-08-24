@@ -97,6 +97,30 @@ void absorbing(uint64_t state[5][5], unsigned char *buffer, size_t buffer_length
 
 // Squeezing Phase
 
+void squeezing(uint64_t state[5][5], unsigned char *output) {
+
+  int output_index = 0;  // Initialise output index
+
+  // Output length for sha-3-256 is 32 bytes, each lane is 8-bytes/64-bits
+  int num_lanes = OUTPUT_LENGTH / 8; // Number of lanes processed = 32-bytes / 8-bytes = 4 lanes
+
+  for(int i = 0; i < num_lanes; i++) {    // Iterates 4 times to extract the first 4
+    
+    int x = i % 5;                        // Calculates current X coordinate of lane in state array
+    int y = i / 5;                        // Calculates current Y coordinate of lane in state array
+
+    uint64_t lane_value = state[x][y];    // Extract the current lanes 64-bit value
+ 
+    // Iterate 8 times to extract all 8 bytes from lane_value and copy to output - using bitwise shift and masking.
+    for (int byte = 0; byte < 8; byte++) {
+      uint64_t shifted_value = lane_value >> (byte * 8);      // Shift by 0, 8, 16, 24, 32, 40, 48, 56
+      uint64_t extracted_byte = shifted_value & 0XFF;         // Mask to get least significant byte
+      output[output_index] = (unsigned char)extracted_byte;   // Set ouput array index to extracted byte value
+      output_index += 1;                                      // Increment output index for the next byte
+    }
+  }
+
+}
 
 /**
  * Implementation of main hashing function declared in header file
@@ -104,15 +128,15 @@ void absorbing(uint64_t state[5][5], unsigned char *buffer, size_t buffer_length
  */
 unsigned char *keccak_hash(unsigned char *data, size_t length) {
   
-  unsigned char *digest = (unsigned char *)malloc(32);  // Allocate memory for output - hashed input
-  if (!digest) return NULL;
+  unsigned char *output = (unsigned char *)malloc(32);  // Allocate memory for output - hashed input
+  if (!output) return NULL;
 
   // Step 1: Padding
   size_t padding_length = BLOCKSIZE - (length % BLOCKSIZE); 
   size_t buffer_length = length + padding_length;                   // Calculate padded message length
   unsigned char *buffer = (unsigned char *)malloc(buffer_length);   // Allocate memory for the padded message buffer
   if (!buffer) {
-    free(digest);
+    free(output);
     return NULL;
   }
 
@@ -126,19 +150,19 @@ unsigned char *keccak_hash(unsigned char *data, size_t length) {
   // Step 3: Absorbing phase
   absorbing(state, buffer, buffer_length);
 
-  //TODO:
-  // Implement Squeezing phase
+  // Step 4: Squeezing phase
+  squeezing(state, output);
 
 
-  
 
-  // place holder value 
-  for (int i = 0; i < 32; i++) {
-    digest[i] = 0x00; 
-  }
-
-  return digest;
+  free(buffer);
+  return output;
 
 }
 
 
+
+  // // place holder value 
+  // for (int i = 0; i < 32; i++) {
+  //   output[i] = 0x00; 
+  // }
