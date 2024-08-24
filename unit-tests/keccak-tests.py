@@ -179,83 +179,83 @@ class TestKeccakMethods(unittest.TestCase):
     
     print("================================ Initialise State: Test Results ", test_results)
     
-    '''
-    Absorbing Unit Test
-    '''
-    def test_absorbing(self):
-      buffers = generate_random_buffers(3)
-      test_results = []
+  '''
+  Absorbing Unit Test
+  '''
+  def test_absorbing(self):
+    buffers = generate_random_buffers(3)
+    test_results = []
 
-      for buffer in buffers:
-        print(f"Buffer to absorb: \n{buffer}")
-        print(f"Buffer Length: \n{len(buffer)}")
-        # Initialise Python state
-        py_sponge = keccak_py.KeccakSponge(1088, 1600, keccak_py.multirate_padding, keccak_py.keccak_f)
-        
-        print(f"Py State before absorbing: \n{py_sponge.state.s}")
-        
-        py_sponge.absorb(buffer)
-        py_result = py_sponge.state.s
-
-        # Initialise C state
-        c_state = (c_uint64 * 5 * 5)()
-        keccak_c.initialise_state(c_state)
-
-        print(f"C State before absorbing: \n{c_state_to_py_list(c_state)}")
-
-        # Convert buffer to the correct C type
-        c_buffer = (c_uint8 * len(buffer))(*buffer)
-
-        # Call C absorbing function
-        keccak_c.absorbing(c_state, c_buffer, len(c_buffer))
-
-        c_result = c_state_to_py_list(c_state)
-
-        # Print Results
-        print(f"C Result: \n{c_result}")
-        print(f"Python Result: \n{py_result}")
-
-        # Tests
-        test_results.append((c_result == py_result))
-        self.assertEqual(c_result, py_result, "C and Python results should be the same")
-
-      print("================================ Absorbing: Test Results ", test_results)
-
-
-    '''
-    Squeezing Unit Test
-    '''
-    def test_squeezing(self):
-      states = generate_random_states(3)
-      test_results = []
-
-      for state in states:
-        
-        # Instantiate states
-        c_state = transform_to_c_state(state)
-        py_state = transform_to_py_state(state)
-
-        # Call C Squeezing function
-        output = (c_uint8 * 32)()               # allocates buffer of 32 bytes for output
-        keccak_c.squeezing(c_state, output)     # pass c_state and output to squeezing function
-        c_result = list(output)                 # convert output to py list
-
-        # Call Python squeezing function
-        py_sponge = keccak_py.KeccakSponge(1088, 1600, keccak_py.multirate_padding, keccak_py.keccak_f)
-        print(f"py_state.s: {py_state.s}")
-        py_sponge.state.s = py_state.s          # set sponge state to py_state
-        py_result = list(py_sponge.squeeze(32)) # 32-byte output
+    for buffer in buffers:
+      print(f"Buffer to absorb: \n{buffer}")
+      print(f"Buffer Length: \n{len(buffer)}")
+      # Initialise Python state
+      py_sponge = keccak_py.KeccakSponge(1088, 1600, keccak_py.multirate_padding, keccak_py.keccak_f)
       
+      print(f"Py State before absorbing: \n{py_sponge.state.s}")
+      
+      py_sponge.absorb(buffer)
+      py_result = py_sponge.state.s
 
-        # Print Results
-        print(f"C Result: \n{c_result}")
-        print(f"Python Result: \n{py_result}")
+      # Initialise C state
+      c_state = (c_uint64 * 5 * 5)()
+      keccak_c.initialise_state(c_state)
 
-        # Tests
-        test_results.append((c_result == py_result))
-        self.assertEqual(c_result, py_result, "C and Python results should be the same")
+      print(f"C State before absorbing: \n{c_state_to_py_list(c_state)}")
 
-      print("================================ Squeezing: Test Results ", test_results)
+      # Convert buffer to the correct C type
+      c_buffer = (c_uint8 * len(buffer))(*buffer)
+
+      # Call C absorbing function
+      keccak_c.absorbing(c_state, c_buffer, len(c_buffer))
+
+      c_result = c_state_to_py_list(c_state)
+
+      # Print Results
+      print(f"C Result: \n{c_result}")
+      print(f"Python Result: \n{py_result}")
+
+      # Tests
+      test_results.append((c_result == py_result))
+      self.assertEqual(c_result, py_result, "C and Python results should be the same")
+
+    print("================================ Absorbing: Test Results ", test_results)
+
+
+  '''
+  Squeezing Unit Test
+  '''
+  def test_squeezing(self):
+    states = generate_random_states(3)
+    test_results = []
+
+    for state in states:
+      
+      # Instantiate states
+      c_state = transform_to_c_state(state)
+      py_state = transform_to_py_state(state)
+
+      # Call C Squeezing function
+      output = (c_uint8 * 32)()               # allocates buffer of 32 bytes for output
+      keccak_c.squeezing(c_state, output)     # pass c_state and output to squeezing function
+      c_result = list(output)                 # convert output to py list
+
+      # Call Python squeezing function
+      py_sponge = keccak_py.KeccakSponge(1088, 1600, keccak_py.multirate_padding, keccak_py.keccak_f)
+      print(f"py_state.s: {py_state.s}")
+      py_sponge.state.s = py_state.s          # set sponge state to py_state
+      py_result = list(py_sponge.squeeze(32)) # 32-byte output
+    
+
+      # Print Results
+      print(f"C Result: \n{c_result}")
+      print(f"Python Result: \n{py_result}")
+
+      # Tests
+      test_results.append((c_result == py_result))
+      self.assertEqual(c_result, py_result, "C and Python results should be the same")
+
+    print("================================ Squeezing: Test Results ", test_results)
 
 if __name__== '__main__':
   unittest.main()
