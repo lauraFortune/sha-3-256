@@ -44,7 +44,7 @@ void keccak_f(uint64_t state[5][5]) {
  * Keccak  Sponge Functions
  */
 
-// Padding
+// Padding (keccak-256)
 void padding(unsigned char *buffer, size_t length, size_t padding_length) {
 
   if (padding_length == 1) {
@@ -153,16 +153,9 @@ unsigned char *keccak_hash(unsigned char *data, size_t length) {
   // Step 4: Squeezing phase
   squeezing(state, output);
 
-
-
+  
+  
   free(buffer);
   return output;
 
 }
-
-
-
-  // // place holder value 
-  // for (int i = 0; i < 32; i++) {
-  //   output[i] = 0x00; 
-  // }

@@ -1,6 +1,6 @@
 
 import unittest           # python testing framework
-import sys                # modifying import path
+import sys                # modifying import paths
 from ctypes import *      # python library for working with C
 from pathlib import Path  # object oriented filesystem paths
 import secrets            # for generating cryptographically secure random numbers
@@ -256,6 +256,43 @@ class TestKeccakMethods(unittest.TestCase):
       self.assertEqual(c_result, py_result, "C and Python results should be the same")
 
     print("================================ Squeezing: Test Results ", test_results)
+
+
+
+  '''
+  Keccak Hash Function Unit Test
+  '''
+  def test_keccak_hash(self):
+    buffers = generate_random_buffers(3)
+    test_results = []
+
+    for buffer in buffers:
+
+      # Python implementation
+      keccak_py_hash = keccak_py.Keccak256()
+      keccak_py_hash.update(buffer)
+      py_digest_str = keccak_py_hash.digest()                               # Gets digest as string of byte values
+      py_digest_hex = py_digest_str.encode('latin1').hex()                  # Convert str (to bytes) to hex
+      py_result = py_digest_hex
+
+
+      # C implementation
+      c_input = (c_uint8 * len(buffer))(*buffer)                            # Create C array from input string
+      keccak_c.keccak_hash.restype = POINTER(c_uint8 * 32)                  # Define return type
+      keccak_c_hash_ptr = keccak_c.keccak_hash(c_input, len(buffer)) 
+      c_hash_array = keccak_c_hash_ptr.contents                             # Gets c types array of byte values
+      c_hash_hex = bytes(c_hash_array).hex()                                # Convert ctypes array (to bytes) to hex
+      c_result = c_hash_hex
+
+      # Print Results
+      print(f"C Result: \n{c_result}")
+      print(f"Python Result: \n{py_result}")
+
+      # Tests
+      test_results.append((c_result == py_result))
+      self.assertEqual(c_result, py_result, "C and Python results should be the same")
+
+      print("================================ Keccak Hash Test Results ", test_results)
 
 if __name__== '__main__':
   unittest.main()

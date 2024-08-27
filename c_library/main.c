@@ -8,7 +8,7 @@
 // helper print function
 void print_32byte_digest(unsigned char *digest, size_t length) {
 
-  for (int i = 0; i < length; i++) {
+  for (size_t i = 0; i < length; i++) {
     printf("%02x", digest[i]); // prints each byte as 2 digit hex
   
     // adds space every 8 bytes for readability
