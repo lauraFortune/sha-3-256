@@ -1,27 +1,31 @@
-## Keccak SHA-3-256 Implementation
+# Keccak SHA-3-256 Implementation
+<br>
+Implementation of Keccak SHA-3 hashing algorithm (version 256) as a C Library. This version was created purely for learning purposes and is not optimised or intended for production use.
 
----
 
-Implementation of Keccak SHA-3 hashing algorithm (version 256) as a C Library. This version was created purely for learning purposes and is not optimised or intended for production use. 
+*   Keccak SHA-3 Variants:
+    
+    ![](https://33333.cdn.cke-cs.com/kSW7V9NHUXugvhoQeFaf/images/33b0db8f8c3b53a6c19ac807af4cfd45e71a8db474592dfe.PNG)
 
-The Keccak algorithm was designed by Guido Bertoni, Joan Daemen(co-author of [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)), Michaël Peeters and Gilles Van Assche and is based on a broader framework known as ‘sponge construction’, formally defined in their 2007 paper ‘[Sponge Functions](https://keccak.team/files/SpongeFunctions.pdf)’. On Oct 2, 2012, Keccak was selected as the successor to SHA-2 by the NIST. This implementation follows the original [Keccak SHA-3 submission](https://keccak.team/files/Keccak-submission-3.pdf) prior to its [standardisation by the NIST](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.202.pdf). 
 
-### Documentation
+### Keccak
+The Keccak algorithm was designed by Guido Bertoni, Joan Daemen(co-author of [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)), Michaël Peeters and Gilles Van Assche and is based on a broader framework known as ‘sponge construction’, formally defined in their 2007 paper ‘[Sponge Functions](https://keccak.team/files/SpongeFunctions.pdf)’. On Oct 2, 2012, Keccak was selected as the successor to SHA-2 by the NIST. This implementation follows the original [Keccak SHA-3 submission](https://keccak.team/files/Keccak-submission-3.pdf) prior to its [standardisation by the NIST](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.202.pdf).
 
-For a more detailed explanation of Keccak, SHA-3-256 and Sponge Construction, please refer to the [keccak-sha-3-256.pdf](https://github.com/lauraFortune/sha-3-256/tree/main/documentation/keccak-sha-3-256.pdf) in the documentation directory
 
-### Features
 
-*   **Complete SHA-3-256 Implementation**
-*   **Adheres to the Original Keccak Padding Rule:**
+ 
+## Features
+
+*   Adheres to the Original Keccak Padding Rule:
     *   If only one byte of padding is required, byte value 0x86 is applied
     *   Else padding begins with 0x06, is filled with zeros 0x00, and ends with 0x80 - signifying the end of the sequence
-*   **Keccak\_hash:** Core function Keccak\_hash takes a user input ‘data’ and returns a 256-bit(32-byte) hash digest
-*   **Submodule Validation:** Tested against submodule [ctz/keccak](https://github.com/ctz/keccak) (Python implementation) for validation. Unit tests are written in Python using the Ctypes library to interface with the C implementation, comparing its output against the referenced submodule.
-*   **Github Actions:** Tests run automatically on each commit
-*   **Learning Focus:** Written for educational purposes with a focus on clarity over security
+*   Submodule Validation: Tested against submodule [ctz/keccak](https://github.com/ctz/keccak) (Python implementation) for validation. Unit tests are written in Python using the Ctypes library to interface with the C implementation, comparing its output against the referenced submodule.
+*   Github Actions: Tests run automatically on each commit
+*   Learning Focus: Written for educational purposes with a focus on clarity over security
 
-### Keccak Hash Function
+
+
+### C Library
 
 The core function Keccak\_hash is the main entry point to the keccak/sha-3-256 C library:
 
@@ -41,7 +45,11 @@ The core function Keccak\_hash is the main entry point to the keccak/sha-3-256 C
 unsigned char *keccak_hash(unsigned char *data, size_t length);
 ```
 
-## Running the C Library
+<br>
+
+## Setting Up
+
+### Running the C Library
 
 1.  Clone project:
     
@@ -64,9 +72,9 @@ unsigned char *keccak_hash(unsigned char *data, size_t length);
     - example:
     	./main "Hello, World!"
     ```
-    
 
-## Testing the Implementation
+
+### Testing
 
  To execute the Python unit tests, run:
 
@@ -76,6 +84,7 @@ make tests
 
 *   These tests validate the C implementation against the Python submodule.
 
+
 ### Cleaning Up
 
 To remove compiled files, run: 
@@ -84,9 +93,18 @@ To remove compiled files, run: 
 make clean
 ```
 
+<br>
+
+## Documentation
+
+For a more detailed explanation of Keccak, SHA-3-256 and Sponge Construction, please refer to the [keccak-sha-3-256.pdf](https://github.com/lauraFortune/sha-3-256/tree/main/documentation/keccak-sha-3-256.pdf) in the documentation directory
+
+
 ## Acknowledgments
 
 *   [Keccak Team Official Website](https://keccak.team/)
 *   [NIST SHA-3 Specification](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.202.pdf)
 *   [ctz/keccak](https://github.com/ctz/keccak) as a submodule for validation
    
+
+
