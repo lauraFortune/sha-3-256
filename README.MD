@@ -97,7 +97,7 @@ make clean
 
 ## Documentation
 
-For a more detailed explanation of Keccak, SHA-3-256 and Sponge Construction, please refer to the [keccak-sha-3-256.pdf](https://github.com/lauraFortune/sha-3-256/tree/main/documentation/keccak-sha-3-256.pdf) in the documentation directory
+For a more detailed explanation of Keccak, SHA-3-256 and Sponge Construction, please refer to [keccak-sha-3-256.pdf](https://github.com/lauraFortune/sha-3-256/tree/main/documentation/keccak-sha-3-256.pdf) in the documentation directory
 
 
 ## Acknowledgments
