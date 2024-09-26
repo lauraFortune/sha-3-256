@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "keccak.h"
 
@@ -20,9 +21,22 @@ void print_32byte_digest(unsigned char *digest, size_t length) {
 
 
 int main() {
+
+    if (argc < 2 ) {
+    printf("Error: Please provide an input string to be hashed \n");
+    printf("Usage: %s <input string> \n", argv[0]);
+    return 1;
+  }
+
+  if (argc > 2) {
+    printf("Error: Too many arguments - Please provide only one input string \n");
+    printf("Usage: %s <input string> \n", argv[0]);
+    return 1;
+  }
+  
   // test input
-  unsigned char input[] = "Hello, World!";
-  size_t input_length = sizeof(input) -1;
+  unsigned char *input = (unsigned char *)argv[1];
+  size_t input_length = strlen(argv[1]);
 
   // call keccak hash fuction on test data
   unsigned char *hash_digest = keccak_hash(input, input_length);
